@@ -1,0 +1,26 @@
+<template>
+  <style>
+    @import url('/styles/styles.css');
+
+    :host {
+      display: block;
+      padding: 2rem;
+      background-color: var(--overlay-background-color);
+      font-size: var(--body-font-size-s);
+    }
+
+    footer {
+      display: block;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    p {
+      margin: 0;
+    }
+  </style>
+
+  <footer>
+    <slot></slot>
+  </footer>
+</template>

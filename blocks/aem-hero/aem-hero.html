@@ -1,0 +1,49 @@
+<template>
+  <style>
+    @import url('/styles/styles.css');
+
+    :host {
+      display: block;
+      position: relative;
+      min-height: 300px;
+      padding: 32px;
+    }
+
+    .picture {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      object-fit: cover;
+      box-sizing: border-box;
+    }
+
+    .picture img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+
+    .title {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      color: white;
+    }
+
+    .title h1 {
+      font-size: var(--heading-font-size-xxl);
+      font-weight: 600;
+      line-height: 1.25;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      scroll-margin: calc(var(--nav-height) + 1em);
+    }
+  </style>
+
+  <div class="title">
+    <slot name="title"></slot>
+  </div>
+  <div class="picture">
+    <slot name="picture"></slot>
+  </div>
+</template>

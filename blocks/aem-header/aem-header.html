@@ -1,0 +1,55 @@
+<template>
+  <style>
+    @import url('/styles/styles.css');
+
+    :host {
+      background-color: var(--background-color);
+      width: 100%;
+      z-index: 10;
+      position: sticky;
+      top: 0;
+      max-height: 100%;
+      display: block;
+      padding: 0;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--nav-height);
+      gap: 1rem;
+      padding: 0 1rem;
+    }
+
+    .brand {
+      text-align: left;
+    }
+
+    .sections {
+      flex-grow: 1;
+    }
+  </style>
+
+  <header>
+    <nav>
+      <div class="nav-hamburger">
+        <button type="button" aria-controls="nav" aria-label="Open navigation">
+          <span class="icon nav-hamburger-icon"></span>
+        </button>
+      </div>
+
+      <div class="brand">
+        <slot name="brand"></slot>
+      </div>
+
+      <div class="sections">
+        <slot name="sections"></slot>
+      </div>
+
+      <div class="tools">
+        <slot name="tools"></slot>
+      </div>
+    </nav>
+  </header>
+</template>
