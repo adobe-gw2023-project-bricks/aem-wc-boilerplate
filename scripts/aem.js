@@ -3,15 +3,15 @@
  * @param {string} name The name of the template
  * @returns {Promise<HTMLTemplateElement>} The template
  */
-async function loadTemplate(blockName) {
-  const href = `${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.html`;
+async function loadTemplate(name) {
+  const href = `${window.hlx.codeBasePath}/bricks/${name}/${name}.html`;
 
   return new Promise((resolve, reject) => {
     const id = href.split('/').pop().split('.').shift();
 
-    const block = document.querySelector(`template[id="${id}"]`);
+    const brick = document.querySelector(`template[id="${id}"]`);
 
-    if (block) {
+    if (brick) {
       resolve();
       return;
     }
@@ -41,26 +41,26 @@ async function loadTemplate(blockName) {
 }
 
 /**
- * Load Block
- * @param {string} href The path to the block
- * @returns {Promise<HTMLElement>} The block
+ * Load Brick
+ * @param {string} href The path to the brick
+ * @returns {Promise<HTMLElement>} The brick
  */
-async function loadBlock(blockName) {
-  const href = `${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.js`;
+async function loadBrick(name) {
+  const href = `${window.hlx.codeBasePath}/bricks/${name}/${name}.js`;
 
   return new Promise((resolve, reject) => {
     import(href)
       .then((mod) => {
         if (mod.default) {
           resolve({
-            name: blockName,
+            name,
             className: mod.default,
           });
         }
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.warn(`Failed to load module for ${blockName}`);
+        console.warn(`Failed to load module for ${name}`, error);
         reject(error);
       });
   });
@@ -147,10 +147,10 @@ function decorateButton(a) {
 }
 
 /**
- * Builds hero block and prepends to main in a new section.
+ * Builds hero brick and prepends to main in a new section.
  * @param {Element} main The container element
  */
-function buildHeroBlock() {
+function buildHeroBrick() {
   const main = document.querySelector('main');
   const h1 = main.querySelector('main h1');
   const picture = main.querySelector('main p > picture');
@@ -291,7 +291,7 @@ export function sampleRUM(checkpoint, data = {}) {
 }
 
 /**
- * Setup block utils.
+ * Setup brick utils.
  */
 function setup() {
   window.hlx = window.hlx || {};
@@ -326,13 +326,13 @@ function loadEagerImages() {
   });
 }
 
-function transformToCustomElement(block) {
-  const tagName = `aem-${block.getAttribute('class')?.split(' ')[0] || block.tagName.toLowerCase()}`;
+function transformToCustomElement(brick) {
+  const tagName = `aem-${brick.getAttribute('class')?.split(' ')[0] || brick.tagName.toLowerCase()}`;
   const customElement = document.createElement(tagName);
 
-  customElement.innerHTML = block.innerHTML;
+  customElement.innerHTML = brick.innerHTML;
 
-  block.parentNode.replaceChild(customElement, block);
+  brick.parentNode.replaceChild(customElement, brick);
 
   // Slots
   [...customElement.children].forEach((slot) => {
@@ -342,30 +342,30 @@ function transformToCustomElement(block) {
   return customElement;
 }
 
-function getBlockResources() {
+function getBrickResources() {
   const components = new Set();
   const templates = new Set();
 
   document
     .querySelectorAll('header, footer, div[class]:not(.fragment):not(.section)')
-    .forEach((block) => {
-      const { status } = block.dataset;
+    .forEach((brick) => {
+      const { status } = brick.dataset;
 
       if (status === 'loading' || status === 'loaded') return;
 
-      block.dataset.status = 'loading';
+      brick.dataset.status = 'loading';
 
-      const customElement = transformToCustomElement(block);
+      const customElement = transformToCustomElement(brick);
       const tagName = customElement.tagName.toLowerCase();
 
       components.add(tagName);
 
-      // only add templates for non-metadata blocks
+      // only add templates for non-metadata bricks
       if (!tagName.endsWith('-metadata')) {
         templates.add(tagName);
       }
 
-      block.dataset.status = 'loaded';
+      brick.dataset.status = 'loaded';
     });
 
   return { components, templates };
@@ -392,8 +392,8 @@ async function preloadFragment(element) {
   }
 }
 
-async function loadBlockStyles() {
-  const res = await fetch(`${window.hlx.codeBasePath}/styles/block.css`);
+async function loadCommonBrickStyles() {
+  const res = await fetch(`${window.hlx.codeBasePath}/styles/bricks-common.css`);
 
   if (!res.ok) {
     // eslint-disable-next-line no-console
@@ -416,21 +416,21 @@ export default async function initialize() {
   // Eager load first image
   loadEagerImages();
 
-  // Build hero block
-  buildHeroBlock();
+  // Build hero brick
+  buildHeroBrick();
 
   // Preload fragments
   await Promise.allSettled(
     [...document.querySelectorAll('.fragment')].map(preloadFragment),
   );
 
-  // Load block resources
-  const { components, templates } = getBlockResources();
+  // Load brick resources
+  const { components, templates } = getBrickResources();
 
   const [loadedComponents] = await Promise.allSettled([
-    Promise.allSettled([...components].map(loadBlock)),
+    Promise.allSettled([...components].map(loadBrick)),
     Promise.allSettled([...templates].map(loadTemplate)),
-    loadBlockStyles(),
+    loadCommonBrickStyles(),
   ]);
 
   // Define custom elements
@@ -472,9 +472,9 @@ export default async function initialize() {
 }
 
 /**
- * Block Definition
+ * Brick Definition
  */
-export class Block extends HTMLElement {
+export class Brick extends HTMLElement {
   constructor(options = {}) {
     super();
 

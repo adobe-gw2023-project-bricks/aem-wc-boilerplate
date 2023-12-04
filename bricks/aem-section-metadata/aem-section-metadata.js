@@ -1,6 +1,6 @@
-import { Block } from '../../scripts/aem.js';
+import { Brick } from '../../scripts/aem.js';
 
-export default class SectionMetadata extends Block {
+export default class SectionMetadata extends Brick {
   constructor() {
     super({ mapValues: true });
   }
