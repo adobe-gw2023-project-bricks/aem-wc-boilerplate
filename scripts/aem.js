@@ -392,7 +392,7 @@ async function preloadFragment(element) {
   }
 }
 
-async function loadCommonBrickStyles() {
+async function getCommonBrickStyles() {
   const res = await fetch(`${window.hlx.codeBasePath}/styles/bricks-common.css`);
 
   if (!res.ok) {
@@ -402,7 +402,6 @@ async function loadCommonBrickStyles() {
   }
 
   const css = await res.text();
-  window.hlx.blockStyles = css;
 
   return css;
 }
@@ -427,14 +426,19 @@ export default async function initialize() {
   // Load brick resources
   const { components, templates } = getBrickResources();
 
-  const [loadedComponents] = await Promise.allSettled([
+  const [css, loadedComponents] = await Promise.allSettled([
+    getCommonBrickStyles(),
     Promise.allSettled([...components].map(loadBrick)),
     Promise.allSettled([...templates].map(loadTemplate)),
-    loadCommonBrickStyles(),
   ]);
 
   // Load common brick styles
-  loadCSS(`${window.hlx.codeBasePath}/styles/bricks-common.css`);
+  if (css.value) {
+    window.hlx.blockStyles = css.value;
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css.value);
+    document.adoptedStyleSheets = [sheet];
+  }
 
   // Define custom elements
   loadedComponents.value.forEach(async ({ status, value }) => {
