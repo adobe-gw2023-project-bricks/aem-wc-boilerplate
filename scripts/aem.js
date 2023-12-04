@@ -327,7 +327,7 @@ function loadEagerImages() {
 }
 
 function transformToCustomElement(block) {
-  const tagName = `aem-${block.getAttribute('class') || block.tagName.toLowerCase()}`;
+  const tagName = `aem-${block.getAttribute('class')?.split(' ')[0] || block.tagName.toLowerCase()}`;
   const customElement = document.createElement(tagName);
 
   customElement.innerHTML = block.innerHTML;
