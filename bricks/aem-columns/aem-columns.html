@@ -2,11 +2,39 @@
   <style>
     :host {
       display: flex;
+      flex-direction: column;
     }
 
-    img {
+    .row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .column {
+      width: 100%;
+      order: 1;
+    }
+
+    .column.with-image {
+      order: 0;
+    }
+
+    .column img {
       width: 100%;
       height: auto;
+    }
+
+    @media (width >= 900px) {
+      .row {
+        align-items: center;
+        flex-direction: unset;
+        gap: 32px;
+      }
+
+      .column {
+        flex: 1;
+        order: unset;
+      }
     }
   </style>
 

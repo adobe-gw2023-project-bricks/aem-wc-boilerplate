@@ -167,6 +167,11 @@ blockquote p::after {
   line-height: 0;
 }
 
+picture {
+  line-height: 0;
+  display: block;
+}
+
 img {
   max-width: 100%;
   width: auto;
