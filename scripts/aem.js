@@ -403,6 +403,8 @@ async function loadBlockStyles() {
 
   const css = await res.text();
   window.hlx.blockStyles = css;
+
+  return css;
 }
 
 /**
