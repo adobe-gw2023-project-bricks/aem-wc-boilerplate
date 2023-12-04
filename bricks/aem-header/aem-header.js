@@ -1,6 +1,6 @@
-import { Block } from '../../scripts/aem.js';
+import { Brick } from '../../scripts/aem.js';
 
-export default class Header extends Block {
+export default class Header extends Brick {
   constructor() {
     super();
 
