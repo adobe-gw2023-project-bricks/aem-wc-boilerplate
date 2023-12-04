@@ -1,13 +1,7 @@
 import { Brick } from '../../scripts/aem.js';
 
 export default class Footer extends Brick {
-  constructor() {
-    super();
-
-    this.render();
-  }
-
-  async render() {
+  async connectedCallback() {
     const res = await fetch('/footer.plain.html');
 
     const [footer] = [
