@@ -433,6 +433,9 @@ export default async function initialize() {
     loadCommonBrickStyles(),
   ]);
 
+  // Load common brick styles
+  loadCSS(`${window.hlx.codeBasePath}/styles/bricks-common.css`);
+
   // Define custom elements
   loadedComponents.value.forEach(async ({ status, value }) => {
     if (status === 'fulfilled') {
