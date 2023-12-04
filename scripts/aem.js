@@ -504,11 +504,13 @@ export class Block extends HTMLElement {
       if (options.mapValues) {
         const [key, value] = element.children;
         this.values.set(key.innerText, value.innerHTML);
-      } else {
-        this.values.push(element);
       }
     });
 
+    // clone root
+    const root = document.createElement('div');
+    root.innerHTML = this.innerHTML;
+    this.root = root.cloneNode(true);
     this.innerHTML = '';
 
     // Set up MutationObserver to detect changes in child nodes
