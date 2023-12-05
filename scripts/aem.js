@@ -174,6 +174,17 @@ function buildHeroBrick() {
 }
 
 /**
+ * Decorate root.
+ */
+function decorateRoot() {
+  const root = document.createElement('aem-root');
+  root.append(document.querySelector('header'));
+  root.append(document.querySelector('main'));
+  root.append(document.querySelector('footer'));
+  document.body.prepend(root);
+}
+
+/**
  * log RUM if part of the sample.
  * @param {string} checkpoint identifies the checkpoint in funnel
  * @param {Object} data additional data for RUM sample
@@ -335,11 +346,12 @@ function transformToCustomElement(brick) {
 }
 
 function getBrickResources() {
-  const components = new Set();
-  const templates = new Set();
+  const components = new Set(['aem-root']);
+  const templates = new Set(['aem-root']);
 
-  document
-    .querySelectorAll('header, footer, div[class]:not(.fragment):not(.section)')
+  // Load Bricks
+  document.body
+    .querySelectorAll('div[class]:not(.fragment)')
     .forEach((brick) => {
       const { status } = brick.dataset;
 
@@ -424,6 +436,9 @@ export default async function initialize() {
     Promise.allSettled([...templates].map(loadTemplate)),
   ]);
 
+  // Decorate Root
+  decorateRoot();
+
   // Load common brick styles
   if (css.value) {
     window.hlx.blockStyles = css.value;
@@ -440,11 +455,6 @@ export default async function initialize() {
         customElements.define(value.name, value.className);
       }
     }
-  });
-
-  // Add sections class to all parent divs
-  document.querySelectorAll('main > div').forEach((section) => {
-    section.classList.add('section');
   });
 
   // Page is fully loaded
@@ -515,9 +525,9 @@ export class Brick extends HTMLElement {
     // Set up MutationObserver to detect changes in child nodes
     this.observer = new MutationObserver((event) => {
       event.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          node.querySelectorAll('.icon').forEach(decorateIcon);
-          node.querySelectorAll('a').forEach(decorateButton);
+        mutation.addedNodes?.forEach((node) => {
+          node.querySelectorAll?.('.icon').forEach(decorateIcon);
+          node.querySelectorAll?.('a').forEach(decorateButton);
         });
       });
     });
