@@ -314,9 +314,8 @@ function setup() {
 
 /** Eager load first image */
 function loadEagerImages() {
-  // on load, eager load if image is majorly visible in the viewport
-  const hero = document.querySelector('main > div:first-of-type > p img');
-  hero.setAttribute('loading', 'eager');
+  const hero = document.querySelector('main img');
+  hero?.setAttribute('loading', 'eager');
 }
 
 function transformToCustomElement(brick) {
