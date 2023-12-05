@@ -346,8 +346,8 @@ function transformToCustomElement(brick) {
 }
 
 function getBrickResources() {
-  const components = new Set(['aem-root']);
-  const templates = new Set(['aem-root']);
+  const components = new Set(['aem-root', 'aem-header', 'aem-footer']);
+  const templates = new Set(['aem-root', 'aem-header', 'aem-footer']);
 
   // Load Bricks
   document.body
