@@ -314,16 +314,8 @@ function setup() {
 
 /** Eager load first image */
 function loadEagerImages() {
-  // on load, eager load if image is majorly visible in the viewport
-  const images = document.querySelectorAll('img');
-
-  images.forEach((img) => {
-    const visible = img.getBoundingClientRect().top < window.innerHeight / 1.5;
-
-    if (visible) {
-      img.setAttribute('loading', 'eager');
-    }
-  });
+  const hero = document.querySelector('main img');
+  hero?.setAttribute('loading', 'eager');
 }
 
 function transformToCustomElement(brick) {
