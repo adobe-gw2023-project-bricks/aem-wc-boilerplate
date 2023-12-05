@@ -439,13 +439,8 @@ export default async function initialize() {
   // Decorate Root
   decorateRoot();
 
-  // Load common brick styles
-  if (css.value) {
-    window.hlx.blockStyles = css.value;
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(css.value);
-    document.adoptedStyleSheets = [sheet];
-  }
+  // common brick styles
+  window.hlx.blockStyles = css.value;
 
   // Define custom elements
   loadedComponents.value.forEach(async ({ status, value }) => {
