@@ -318,20 +318,20 @@ function loadEagerImages() {
   hero?.setAttribute('loading', 'eager');
 }
 
-function transformToCustomElement(brick) {
-  const tagName = `aem-${brick.getAttribute('class')?.split(' ')[0] || brick.tagName.toLowerCase()}`;
-  const customElement = document.createElement(tagName);
+function transformToBrick(block) {
+  const tagName = `aem-${block.getAttribute('class')?.split(' ')[0] || block.tagName.toLowerCase()}`;
+  const brick = document.createElement(tagName);
 
-  customElement.innerHTML = brick.innerHTML;
+  brick.innerHTML = block.innerHTML;
 
-  brick.parentNode.replaceChild(customElement, brick);
+  block.parentNode.replaceChild(brick, block);
 
   // Slots
-  [...customElement.children].forEach((slot) => {
+  [...brick.children].forEach((slot) => {
     slot.setAttribute('slot', 'item');
   });
 
-  return customElement;
+  return brick;
 }
 
 function getBrickResources() {
@@ -340,15 +340,15 @@ function getBrickResources() {
 
   document
     .querySelectorAll('header, footer, div[class]:not(.fragment):not(.section)')
-    .forEach((brick) => {
-      const { status } = brick.dataset;
+    .forEach((block) => {
+      const { status } = block.dataset;
 
       if (status === 'loading' || status === 'loaded') return;
 
-      brick.dataset.status = 'loading';
+      block.dataset.status = 'loading';
 
-      const customElement = transformToCustomElement(brick);
-      const tagName = customElement.tagName.toLowerCase();
+      const brick = transformToBrick(block);
+      const tagName = brick.tagName.toLowerCase();
 
       components.add(tagName);
 
