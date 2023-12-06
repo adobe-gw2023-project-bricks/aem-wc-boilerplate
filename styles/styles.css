@@ -61,40 +61,9 @@
 }
 
 body {
-  font-size: var(--body-font-size-m);
   margin: 0;
-  font-family: var(--body-font-family);
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: var(--background-color);
 }
 
-/* Use opacity over display: none to let the browser download LCP image assets */
 body:not([data-status='loaded']) {
   display: none;
-}
-
-header {
-  height: var(--nav-height);
-}
-
-.section {
-  padding: 64px 16px;
-}
-
-.section > * {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (width >= 600px) {
-  .section {
-    padding: 64px 32px;
-  }
-}
-
-/* section metadata */
-.section.highlight {
-  background-color: var(--highlight-background-color);
 }

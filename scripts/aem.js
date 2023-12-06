@@ -103,6 +103,8 @@ async function loadFonts() {
  * @param {span} [element] span element with icon classes
  */
 function decorateIcon(elem) {
+  if (elem.dataset.decorated) return;
+
   const iconName = Array.from(elem.classList)
     .find((c) => c.startsWith('icon-'))
     .substring(5);
@@ -111,6 +113,7 @@ function decorateIcon(elem) {
   img.src = `${window.hlx.codeBasePath}/icons/${iconName}.svg`;
   img.loading = 'lazy';
   elem.append(img);
+  elem.dataset.decorated = true;
 }
 
 /**
@@ -118,6 +121,8 @@ function decorateIcon(elem) {
  * @param {Element} element container element
  */
 function decorateButton(a) {
+  if (a.dataset.decorated) return;
+
   a.title = a.title || a.textContent;
 
   if (a.href !== a.textContent) {
@@ -143,6 +148,8 @@ function decorateButton(a) {
     ) {
       a.className = 'button secondary';
     }
+
+    a.dataset.decorated = true;
   }
 }
 
@@ -171,6 +178,17 @@ function buildHeroBrick() {
 
     main.prepend(section);
   }
+}
+
+/**
+ * Decorate root.
+ */
+function decorateRoot() {
+  const root = document.createElement('aem-root');
+  root.append(document.querySelector('header'));
+  root.append(document.querySelector('main'));
+  root.append(document.querySelector('footer'));
+  document.body.prepend(root);
 }
 
 /**
@@ -335,11 +353,12 @@ function transformToCustomElement(brick) {
 }
 
 function getBrickResources() {
-  const components = new Set();
-  const templates = new Set();
+  const components = new Set(['aem-root', 'aem-header', 'aem-footer']);
+  const templates = new Set(['aem-root', 'aem-header', 'aem-footer']);
 
-  document
-    .querySelectorAll('header, footer, div[class]:not(.fragment):not(.section)')
+  // Load Bricks
+  document.body
+    .querySelectorAll('div[class]:not(.fragment)')
     .forEach((brick) => {
       const { status } = brick.dataset;
 
@@ -424,13 +443,11 @@ export default async function initialize() {
     Promise.allSettled([...templates].map(loadTemplate)),
   ]);
 
-  // Load common brick styles
-  if (css.value) {
-    window.hlx.blockStyles = css.value;
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(css.value);
-    document.adoptedStyleSheets = [sheet];
-  }
+  // Decorate Root
+  decorateRoot();
+
+  // common brick styles
+  window.hlx.blockStyles = css.value;
 
   // Define custom elements
   loadedComponents.value.forEach(async ({ status, value }) => {
@@ -440,11 +457,6 @@ export default async function initialize() {
         customElements.define(value.name, value.className);
       }
     }
-  });
-
-  // Add sections class to all parent divs
-  document.querySelectorAll('main > div').forEach((section) => {
-    section.classList.add('section');
   });
 
   // Page is fully loaded
@@ -499,12 +511,12 @@ export class Brick extends HTMLElement {
 
     const slots = this.querySelectorAll('[slot="item"]');
 
-    slots.forEach((element) => {
-      if (options.mapValues) {
+    if (options.mapValues) {
+      slots.forEach((element) => {
         const [key, value] = element.children;
         this.values.set(key.innerText, value.innerHTML);
-      }
-    });
+      });
+    }
 
     // clone root
     const root = document.createElement('div');
@@ -515,9 +527,9 @@ export class Brick extends HTMLElement {
     // Set up MutationObserver to detect changes in child nodes
     this.observer = new MutationObserver((event) => {
       event.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          node.querySelectorAll('.icon').forEach(decorateIcon);
-          node.querySelectorAll('a').forEach(decorateButton);
+        mutation.addedNodes?.forEach((node) => {
+          node.querySelectorAll?.('.icon:not([data-decorated])').forEach(decorateIcon);
+          node.querySelectorAll?.('a:not([data-decorated])').forEach(decorateButton);
         });
       });
     });

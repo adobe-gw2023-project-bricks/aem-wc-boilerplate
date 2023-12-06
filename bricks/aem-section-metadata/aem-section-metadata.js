@@ -8,9 +8,9 @@ export default class SectionMetadata extends Brick {
   connectedCallback() {
     [...this.values].forEach(([key, value]) => {
       if (key.toLowerCase() === 'style') {
-        this.parentElement.classList.add(value);
+        this.parentElement.parentElement.classList.add(value);
       } else {
-        this.parentElement.dataset[key] = value;
+        this.parentElement.parentElement.dataset[key] = value;
       }
     });
   }

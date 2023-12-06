@@ -1,0 +1,46 @@
+<template>
+  <style>
+    :host {
+      font-size: var(--body-font-size-m);
+      font-family: var(--body-font-family);
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+    }
+
+    header {
+      height: var(--nav-height);
+    }
+
+    .section {
+      padding: 64px 16px;
+    }
+
+    .wrapper {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (width >= 600px) {
+      .section {
+        padding: 64px 32px;
+      }
+    }
+
+    /* section metadata */
+    .section.highlight {
+      background-color: var(--highlight-background-color);
+    }
+  </style>
+
+  <body>
+    <aem-header></aem-header>
+
+    <main>
+      <slot name="main"></slot>
+    </main>
+
+    <aem-footer></aem-footer>
+  </body>
+</template>
