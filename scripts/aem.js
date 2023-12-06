@@ -347,8 +347,8 @@ function getBrickResources() {
 
       block.dataset.status = 'loading';
 
-      const customElement = transformToBrick(block);
-      const tagName = customElement.tagName.toLowerCase();
+      const brick = transformToBrick(block);
+      const tagName = brick.tagName.toLowerCase();
 
       components.add(tagName);
 
@@ -357,7 +357,7 @@ function getBrickResources() {
         templates.add(tagName);
       }
 
-      customElement.dataset.status = 'loaded';
+      brick.dataset.status = 'loaded';
     });
 
   return { components, templates };
