@@ -320,18 +320,18 @@ function loadEagerImages() {
 
 function transformToBrick(block) {
   const tagName = `aem-${block.getAttribute('class')?.split(' ')[0] || block.tagName.toLowerCase()}`;
-  const customElement = document.createElement(tagName);
+  const brick = document.createElement(tagName);
 
-  customElement.innerHTML = block.innerHTML;
+  brick.innerHTML = block.innerHTML;
 
-  block.parentNode.replaceChild(customElement, block);
+  block.parentNode.replaceChild(brick, block);
 
   // Slots
-  [...customElement.children].forEach((slot) => {
+  [...brick.children].forEach((slot) => {
     slot.setAttribute('slot', 'item');
   });
 
-  return customElement;
+  return brick;
 }
 
 function getBrickResources() {
