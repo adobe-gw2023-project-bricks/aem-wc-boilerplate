@@ -318,13 +318,13 @@ function loadEagerImages() {
   hero?.setAttribute('loading', 'eager');
 }
 
-function transformToCustomElement(brick) {
-  const tagName = `aem-${brick.getAttribute('class')?.split(' ')[0] || brick.tagName.toLowerCase()}`;
+function transformToBrick(block) {
+  const tagName = `aem-${block.getAttribute('class')?.split(' ')[0] || block.tagName.toLowerCase()}`;
   const customElement = document.createElement(tagName);
 
-  customElement.innerHTML = brick.innerHTML;
+  customElement.innerHTML = block.innerHTML;
 
-  brick.parentNode.replaceChild(customElement, brick);
+  block.parentNode.replaceChild(customElement, block);
 
   // Slots
   [...customElement.children].forEach((slot) => {
@@ -347,7 +347,7 @@ function getBrickResources() {
 
       block.dataset.status = 'loading';
 
-      const customElement = transformToCustomElement(block);
+      const customElement = transformToBrick(block);
       const tagName = customElement.tagName.toLowerCase();
 
       components.add(tagName);
