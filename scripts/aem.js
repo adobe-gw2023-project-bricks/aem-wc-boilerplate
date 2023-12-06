@@ -340,14 +340,14 @@ function getBrickResources() {
 
   document
     .querySelectorAll('header, footer, div[class]:not(.fragment):not(.section)')
-    .forEach((brick) => {
-      const { status } = brick.dataset;
+    .forEach((block) => {
+      const { status } = block.dataset;
 
       if (status === 'loading' || status === 'loaded') return;
 
-      brick.dataset.status = 'loading';
+      block.dataset.status = 'loading';
 
-      const customElement = transformToCustomElement(brick);
+      const customElement = transformToCustomElement(block);
       const tagName = customElement.tagName.toLowerCase();
 
       components.add(tagName);
@@ -357,7 +357,7 @@ function getBrickResources() {
         templates.add(tagName);
       }
 
-      brick.dataset.status = 'loaded';
+      customElement.dataset.status = 'loaded';
     });
 
   return { components, templates };
