@@ -103,6 +103,8 @@ async function loadFonts() {
  * @param {span} [element] span element with icon classes
  */
 function decorateIcon(elem) {
+  if (elem.dataset.decorated) return;
+
   const iconName = Array.from(elem.classList)
     .find((c) => c.startsWith('icon-'))
     .substring(5);
@@ -111,6 +113,7 @@ function decorateIcon(elem) {
   img.src = `${window.hlx.codeBasePath}/icons/${iconName}.svg`;
   img.loading = 'lazy';
   elem.append(img);
+  elem.dataset.decorated = true;
 }
 
 /**
@@ -118,6 +121,8 @@ function decorateIcon(elem) {
  * @param {Element} element container element
  */
 function decorateButton(a) {
+  if (a.dataset.decorated) return;
+
   a.title = a.title || a.textContent;
 
   if (a.href !== a.textContent) {
@@ -143,6 +148,8 @@ function decorateButton(a) {
     ) {
       a.className = 'button secondary';
     }
+
+    a.dataset.decorated = true;
   }
 }
 
@@ -521,8 +528,8 @@ export class Brick extends HTMLElement {
     this.observer = new MutationObserver((event) => {
       event.forEach((mutation) => {
         mutation.addedNodes?.forEach((node) => {
-          node.querySelectorAll?.('.icon').forEach(decorateIcon);
-          node.querySelectorAll?.('a').forEach(decorateButton);
+          node.querySelectorAll?.('.icon:not([data-decorated])').forEach(decorateIcon);
+          node.querySelectorAll?.('a:not([data-decorated])').forEach(decorateButton);
         });
       });
     });
