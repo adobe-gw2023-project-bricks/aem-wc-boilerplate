@@ -1,3 +1,5 @@
+import config from '../bricks.config.js';
+
 /**
  * Load HTML Template
  * @param {string} name The name of the template
@@ -113,6 +115,7 @@ function decorateIcon(elem) {
   img.src = `${window.hlx.codeBasePath}/icons/${iconName}.svg`;
   img.loading = 'lazy';
   elem.append(img);
+
   elem.dataset.decorated = true;
 }
 
@@ -332,42 +335,77 @@ function setup() {
 
 /** Eager load first image */
 function loadEagerImages() {
-  const hero = document.querySelector('main img');
-  hero?.setAttribute('loading', 'eager');
+  // Query for the first <picture> element in the DOM
+  const pictureElement = document.querySelector('picture');
+
+  if (!pictureElement) return;
+
+  function getSrcSet() {
+    const sourceElement = Array.from(pictureElement.querySelectorAll('source')).find((source) => {
+      const mediaQuery = source.getAttribute('media');
+      return !mediaQuery || window.matchMedia(mediaQuery).matches;
+    });
+
+    const source = (sourceElement && sourceElement.getAttribute('srcset')) || pictureElement.querySelector('img').getAttribute('src');
+
+    return source;
+  }
+
+  // Create the link element
+  const linkElement = document.createElement('link');
+  linkElement.rel = 'preload';
+  linkElement.as = 'image';
+  linkElement.href = getSrcSet();
+
+  // Append the link element to the head of the document
+  document.head.appendChild(linkElement);
 }
 
-function transformToCustomElement(brick) {
-  const tagName = `aem-${brick.getAttribute('class')?.split(' ')[0] || brick.tagName.toLowerCase()}`;
-  const customElement = document.createElement(tagName);
+function transformToBrick(block) {
+  const { classList } = block;
+  const blockName = classList[0];
+  const blockClasses = [...classList].slice(1);
 
-  customElement.innerHTML = brick.innerHTML;
+  const tagName = `aem-${blockName || block.tagName.toLowerCase()}`;
+  const brick = document.createElement(tagName);
+  brick.classList.add(...blockClasses);
 
-  brick.parentNode.replaceChild(customElement, brick);
+  brick.innerHTML = block.innerHTML;
+
+  block.parentNode.replaceChild(brick, block);
 
   // Slots
-  [...customElement.children].forEach((slot) => {
+  [...brick.children].forEach((slot) => {
     slot.setAttribute('slot', 'item');
   });
 
-  return customElement;
+  return brick;
 }
 
 function getBrickResources() {
-  const components = new Set(['aem-root', 'aem-header', 'aem-footer']);
-  const templates = new Set(['aem-root', 'aem-header', 'aem-footer']);
+  const components = new Set([]);
+  const templates = new Set([]);
 
-  // Load Bricks
+  // Load Bricks from config
+  config.bricks?.forEach((brick) => {
+    components.add(brick.name);
+    if (brick.template !== false) {
+      templates.add(brick.name);
+    }
+  });
+
+  // Load Bricks from DOM
   document.body
     .querySelectorAll('div[class]:not(.fragment)')
-    .forEach((brick) => {
-      const { status } = brick.dataset;
+    .forEach((block) => {
+      const { status } = block.dataset;
 
       if (status === 'loading' || status === 'loaded') return;
 
-      brick.dataset.status = 'loading';
+      block.dataset.status = 'loading';
 
-      const customElement = transformToCustomElement(brick);
-      const tagName = customElement.tagName.toLowerCase();
+      const brick = transformToBrick(block);
+      const tagName = brick.tagName.toLowerCase();
 
       components.add(tagName);
 
@@ -418,8 +456,8 @@ async function getCommonBrickStyles() {
 }
 
 /**
- * Initializiation.
- */
+   * Initializiation.
+   */
 export default async function initialize() {
   setup();
 
@@ -480,11 +518,18 @@ export default async function initialize() {
   window.addEventListener('error', (event) => {
     sampleRUM('error', { source: event.filename, target: event.lineno });
   });
+
+  // Load lazy css from config
+  config.css?.forEach(({ path }) => {
+    if (css.lazy) {
+      loadCSS(`${window.hlx.codeBasePath}/styles/${path}`);
+    }
+  });
 }
 
 /**
- * Brick Definition
- */
+   * Brick Definition
+   */
 export class Brick extends HTMLElement {
   constructor(options = {}) {
     super();
